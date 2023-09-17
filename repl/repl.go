@@ -3,17 +3,20 @@ package repl
 import (
 	"bufio"
 	"fmt"
+	"io"
+
 	"github.com/jacobjedwards/poc-lang/evaluator"
 	"github.com/jacobjedwards/poc-lang/lexer"
+	"github.com/jacobjedwards/poc-lang/object"
 	"github.com/jacobjedwards/poc-lang/parser"
 	"github.com/jacobjedwards/poc-lang/token"
-	"io"
 )
 
 const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+    env := object.NewEnvironment()
 
 	for {
 		fmt.Print(PROMPT)
@@ -34,7 +37,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		event := evaluator.Eval(program)
+		event := evaluator.Eval(program, env)
 		if event != nil {
 			io.WriteString(out, event.Inspect())
 			io.WriteString(out, "\n")
